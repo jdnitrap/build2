@@ -5,6 +5,7 @@
 { config, pkgs, lib, ... }:
 
 
+
 # This was just added so you might what to look at it
 #let
   #unstable = import (builtins.fetchTarball {
@@ -59,37 +60,17 @@
   };
 
   # Enable the X11 windowing system.
-	services.xserver.enable = true;
+  services.xserver.enable = true;
 
-  # Display Manager.
-
-	services.xserver.displayManager.lightdm.enable = true;
+  #Display Manager
+	services.xserver.displayManager.sddm.enable = true;
 	#services.xserver.displayManager.lightdm.autoLogin.enable = true;
 	#services.xserver.displayManager.lightdm.autoLogin.user = "bob";
 	#services.xserver.displayManager.gdm.enable = true;
-	#services.xserver.displayManager.sddm.enable = true:
+	#services.xserver.displayManager.sddm.enable = true;
 
-  # Enable the XFCE Desktop Environment.
-	
-#	services.xserver.desktopManager.xfce.enable = true;
-  
-  #Enable the Gnome Desktop Enviroment.
-
-#	services.xserver.desktopManager.gnome.enable = true;
-
-  #Enable the Kodi Desktop
-
-#	services.xserver.desktopManager.kodi.enable = true;
-
-  #Enable the lxqt Desktop
-
-#	services.xserver.desktopManager.lxqt.enable = true;
-#	services.xserver.desktopManager.pantheon.enable = true;
-#	services.xserver.desktopManager.cinnamon.enable = true;
-#	services.xserver.desktopManager.cde.enable = true;
-#	services.xserver.desktopManager.mate.enable = true;
-	services.xserver.desktopManager.plasma5.enable = true;
-
+  # Enable the Desktop Environment.
+  	services.xserver.desktopManager.plasma5.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -98,7 +79,7 @@
   };
 
   # Enable CUPS to print documents.
-	services.printing.enable = true;
+  	services.printing.enable = true;
   	services.printing.drivers = [ pkgs.gutenprint pkgs.epsonscan2 pkgs.epson-201106w pkgs.epson-escpr ];
 	services.printing.browsing = true;
 	services.printing.browsedConf = ''
@@ -133,46 +114,34 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-  
-  #Flatpak
-
-#	services.flatpak.enable = true;
-#	xdg.portal = {
-#	enable = true;
-#	wlr.enable = true;
-#	};
-
+ 
   #Jellyfin Server
-	
-
 
 	services.jellyfin = {
 	enable = true;
 	openFirewall = true;
 	user="bob";
 	};
-		
+
+  #Flatpak
+#	services.flatpak.enable = true;
+#	xdg.portal = {
+#	enable = true;
+#	wlr.enable = true;
+#	};
+
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bob = {
-    	isNormalUser = true;
-    	description = "bob";
-  	extraGroups = [ "networkmanager" "wheel" "jellyfin" ];
-	packages = with pkgs; [
-      	];
-  };
-  
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-	#nix-software-center
-	wget
+    isNormalUser = true;
+    description = "bob";
+    extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [
+      	#nix-software-center
 	firefox
-	thunderbird
+      	kate
+     	thunderbird
+	wget
 	screen
 	filezilla
 	htop
@@ -184,9 +153,24 @@
 	geany
 	libreoffice
 	homebank
-	bottles
-	virtualbox
-      	];
+	git
+	curl
+	anydesk
+	brave
+	simple-scan
+	
+   ];
+  };
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+  #  wget
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
