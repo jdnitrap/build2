@@ -8,15 +8,15 @@
 
 # This was just added so you might what to look at it
 #let
-  #unstable = import (builtins.fetchTarball {
-  #  url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-  #}) {config = config.nixpkgs.config;};
-  #nix-software-center = import (pkgs.fetchFromGitHub {
-    #owner = "snowfallorg";
-    #repo = "nix-software-center";
-    #rev = "0.1.2";
-    #sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
-  #}) {pkgs = unstable;};
+#  unstable = import (builtins.fetchTarball {
+#    url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+#  }) {config = config.nixpkgs.config;};
+#  nix-software-center = import (pkgs.fetchFromGitHub {
+#    owner = "snowfallorg";
+#    repo = "nix-software-center";
+#    rev = "0.1.2";
+#    sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
+#  }) {pkgs = unstable;};
 #in
 #This is the end of what was added above
 
@@ -68,8 +68,12 @@
 	#services.xserver.displayManager.lightdm.autoLogin.user = "bob";
 	#services.xserver.displayManager.gdm.enable = true;
 	#services.xserver.displayManager.sddm.enable = true;
-
-  # Enable the Desktop Environment.
+	
+	#Window Manager
+	#services.xserver.windowManager.icewm.enable = true;
+	
+	
+	#Enable the Desktop Environment.
   	services.xserver.desktopManager.plasma5.enable = true;
 
   # Configure keymap in X11
@@ -94,6 +98,19 @@
   	nssmdns = true;
   	openFirewall = true;
 	};
+
+
+  # Enable doc scanning
+	#services.sane.enable = true;
+	hardware.sane.extraBackends = [ pkgs.epkowa ];
+	#hardware.sane.extraBackends = [ pkgs.utsushi ];
+	#services.udev.packages = [ pkgs.utsushi ];
+	
+	
+	hardware.sane.enable = true; # enables support for SANE scanners
+	
+	services.ipp-usb.enable = true;
+
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -135,7 +152,7 @@
   users.users.bob = {
     isNormalUser = true;
     description = "bob";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "scanner" "lp" ];
     packages = with pkgs; [
       	#nix-software-center
 	firefox
@@ -158,7 +175,8 @@
 	anydesk
 	brave
 	simple-scan
-	
+	vlc
+
    ];
   };
 
