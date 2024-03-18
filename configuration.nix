@@ -63,7 +63,7 @@
   services.xserver.enable = true;
 
   #Display Manager
-	services.xserver.displayManager.sddm.enable = true;
+	services.xserver.displayManager.lightdm.enable = true;
 	#services.xserver.displayManager.lightdm.autoLogin.enable = true;
 	#services.xserver.displayManager.lightdm.autoLogin.user = "bob";
 	#services.xserver.displayManager.gdm.enable = true;
@@ -74,7 +74,7 @@
 	
 	
 	#Enable the Desktop Environment.
-  	services.xserver.desktopManager.plasma5.enable = true;
+  	services.xserver.desktopManager.cinnamon.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -84,27 +84,34 @@
 
   # Enable CUPS to print documents.
   	services.printing.enable = true;
-  	services.printing.drivers = [ pkgs.gutenprint pkgs.epsonscan2 pkgs.epson-201106w pkgs.epson-escpr ];
+	services.printing.drivers = [ pkgs.gutenprint pkgs.epson-201106w pkgs.epson-escpr ]; 
 	services.printing.browsing = true;
-	services.printing.browsedConf = ''
-	BrowseDNSSDSubTypes _cups,_print
-	BrowseLocalProtocols all
-	BrowseRemoteProtocols all
-	CreateIPPPrinterQueues All
-	BrowseProtocols all
-    	'';
+	programs.system-config-printer.enable = true;
+	services.system-config-printer.enable = true;
+#	hardware.printers.ensurePrinters.*.model = true;
+#	hardware.printers.ensurePrinters.*.deviceUri = true;			
 	services.avahi = {
   	enable = true;
-  	nssmdns = true;
+#  	nssmdns = false;
   	openFirewall = true;
 	};
 
 
-  # Enable doc scanning
-	#services.sane.enable = true;
+  services.avahi.nssmdns = false; # Use the settings from below
+  # settings from avahi-daemon.nix where mdns is replaced with mdns4
+  system.nssModules = pkgs.lib.optional (!config.services.avahi.nssmdns) pkgs.nssmdns;
+  system.nssDatabases.hosts = with pkgs.lib; optionals (!config.services.avahi.nssmdns) (mkMerge [
+    (mkBefore [ "mdns4_minimal [NOTFOUND=return]" ]) # before resolve
+    (mkAfter [ "mdns4" ]) # after dns
+  ]);
+
+	
+
+# Enable doc scanning
+#	services.sane.enable = true;
 	hardware.sane.extraBackends = [ pkgs.epkowa ];
-	#hardware.sane.extraBackends = [ pkgs.utsushi ];
-	#services.udev.packages = [ pkgs.utsushi ];
+#	hardware.sane.extraBackends = [ pkgs.utsushi ];
+#	services.udev.packages = [ pkgs.utsushi ];
 	
 	
 	hardware.sane.enable = true; # enables support for SANE scanners
@@ -176,7 +183,7 @@
 	brave
 	simple-scan
 	vlc
-
+	gtklp
    ];
   };
 
@@ -205,7 +212,7 @@
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+   networking.firewall.allowedUDPPorts = [ 5353 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
